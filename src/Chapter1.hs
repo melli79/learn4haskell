@@ -666,8 +666,11 @@ You need to use recursion in this task. Feel free to return to it later, if you
 aren't ready for this boss yet!
 -}
 
-firstDigit n = error "firstDigit: Not implemented!"
-
+firstDigit :: Int -> Int
+firstDigit n = headDigits (abs n)
+  where  headDigits :: Int -> Int
+         headDigits n | n<10 = n
+          | otherwise = headDigits (n `div` 10)
 
 {-
 You did it! Now it is time to open a pull request with your changes
