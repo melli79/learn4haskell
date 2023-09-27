@@ -556,7 +556,8 @@ value after "=" where the condition is true.
 Casual reminder about adding top-level type signatures for all functions :)
 -}
 
-mid x y z = error "mid: not implemented!"
+mid :: (Num a, Num b, Num c) => a -> b -> c -> b
+mid _ y _ = y
 
 {- |
 =⚔️= Task 8
@@ -570,8 +571,15 @@ True
 >>> isVowel 'x'
 False
 -}
-isVowel c = error "isVowel: not implemented!"
 
+isVowel :: Char -> Bool
+isVowel 'a' = True
+isVowel 'e' = True
+isVowel 'i' = True
+isVowel 'o' = True
+isVowel 'u' = True
+isVowel 'y' = error "unknown"
+isVowel _ = False
 
 {- |
 == Local variables and functions
@@ -634,8 +642,11 @@ Try to introduce variables in this task (either with let-in or where) to avoid
 specifying complex expressions.
 -}
 
-sumLast2 n = error "sumLast2: Not implemented!"
-
+sumLast2 :: Int -> Int
+sumLast2 n = u + d
+  where u = (abs n) `mod` 10
+        tenth = (abs n) `div` 10
+        d = tenth `mod` 10
 
 {- |
 =💣= Task 10*
