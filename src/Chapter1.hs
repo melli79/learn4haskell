@@ -301,43 +301,43 @@ expressions in GHCi
   functions and operators first. Remember this from the previous task? ;)
 
 >>> 1 + 2
-<INSERT THE RESULT INSTEAD OF THE TEXT>
+3
 
 >>> 10 - 15
-<INSERT THE RESULT INSTEAD OF THE TEXT>
+-5
 
 >>> 10 - (-5)  -- negative constants require ()
-<INSERT THE RESULT INSTEAD OF THE TEXT>
+15
 
 >>> (3 + 5) < 10
-<INSERT THE RESULT INSTEAD OF THE TEXT>
+True
 
 >>> True && False
-<INSERT THE RESULT INSTEAD OF THE TEXT>
+False
 
 >>> 10 < 20 || 20 < 5
-<INSERT THE RESULT INSTEAD OF THE TEXT>
+True
 
 >>> 2 ^ 10  -- power
-<INSERT THE RESULT INSTEAD OF THE TEXT>
+1024
 
 >>> not False
-<INSERT THE RESULT INSTEAD OF THE TEXT>
+True
 
 >>> div 20 3  -- integral division
-<INSERT THE RESULT INSTEAD OF THE TEXT>
+6
 
 >>> mod 20 3  -- integral division remainder
-<INSERT THE RESULT INSTEAD OF THE TEXT>
+2
 
 >>> max 4 10
-<INSERT THE RESULT INSTEAD OF THE TEXT>
+10
 
 >>> min 5 (max 1 2)
-<INSERT THE RESULT INSTEAD OF THE TEXT>
+2
 
 >>> max (min 1 10) (min 5 7)
-<INSERT THE RESULT INSTEAD OF THE TEXT>
+5
 
 Because Haskell is a __statically-typed__ language, you see an error each time
 you try to mix values of different types in situations where you are not
@@ -429,6 +429,7 @@ task is to specify the type of this function.
 49
 -}
 
+squareSum :: Int -> Int -> Int
 squareSum x y = (x + y) * (x + y)
 
 
@@ -449,7 +450,7 @@ Implement the function that takes an integer value and returns the next 'Int'.
   function body with the proper implementation.
 -}
 next :: Int -> Int
-next x = error "next: not implemented!"
+next x = succ x
 
 {- |
 After you've implemented the function (or even during the implementation), you
@@ -490,7 +491,8 @@ Implement a function that returns the last digit of a given number.
   whether it works for you!
 -}
 -- DON'T FORGET TO SPECIFY THE TYPE IN HERE
-lastDigit n = error "lastDigit: Not implemented!"
+lastDigit :: Int -> Int
+lastDigit n = mod n 10
 
 
 {- |
@@ -520,7 +522,7 @@ branches because it is an expression and it must always return some value.
   satisfying the check will be returned and, therefore, evaluated.
 -}
 closestToZero :: Int -> Int -> Int
-closestToZero x y = error "closestToZero: not implemented!"
+closestToZero x y = if (abs x) <= (abs y) then x  else y
 
 
 {- |
