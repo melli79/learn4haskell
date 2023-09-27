@@ -217,7 +217,7 @@ True :: Bool
 
 A pair of boolean and char:
 >>> :t (True, 'x')
-(True, 'a') :: (Bool, Char)
+(True, 'x') :: (Bool, Char)
 
 Boolean negation:
 >>> :t not
@@ -527,7 +527,7 @@ closestToZero x y = if (abs x) <= (abs y) then x  else y
 
 {- |
 =⚔️= Task 7
-Write a function that returns the middle number among three given numbers.
+Write a function that returns the median among three given numbers.
 
 >>> mid 3 1 2
 2
@@ -556,8 +556,13 @@ value after "=" where the condition is true.
 Casual reminder about adding top-level type signatures for all functions :)
 -}
 
-mid :: (Num a, Num b, Num c) => a -> b -> c -> b
-mid _ y _ = y
+mid :: (Num a, Ord a) => a -> a -> a -> a
+mid x y z | x <= y && y <= z = y
+  | x <= y && z <= x = x
+  | x <= y && x <= z = z
+  | y < x && x <= z = x
+  | y < x && z <= y = y
+  | otherwise = z
 
 {- |
 =⚔️= Task 8
