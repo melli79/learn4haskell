@@ -67,7 +67,7 @@ All imports should go at the beginning of the module: after the
 "module MODULE_NAME where" line and before the first function (or
 type) definition.
 
-♫ NOTE: you can use Hoogle to explore modules and functions from other
+♫ NOTE: you can use [Hoogle](https://hoohgle.haskell.org/) to explore modules and functions from other
   places as well.
 
 When working with lists, the most practical module will be "Data.List":
@@ -136,43 +136,43 @@ functions in GHCi and insert the corresponding resulting output below:
 
 List of booleans:
 >>> :t [True, False]
-
+[True, False] :: [Bool]
 
 String is a list of characters:
 >>> :t "some string"
-
+"some string" :: String
 
 Empty list:
 >>> :t []
-
+[] :: [a]
 
 Append two lists:
 >>> :t (++)
-
+(++) :: [a] -> [a] -> [a]
 
 Prepend an element at the beginning of a list:
 >>> :t (:)
-
+(:) :: a -> [a] -> [a]
 
 Reverse a list:
 >>> :t reverse
-
+reverse :: [a] -> [a]
 
 Take first N elements of a list:
 >>> :t take
-
+take :: Int -> [a] -> [a]
 
 Create a list from N same elements:
 >>> :t replicate
-
+replicate :: Int -> a -> [a]
 
 Split a string by line breaks:
 >>> :t lines
-
+lines :: String -> [String]
 
 Join a list of strings with line breaks:
 >>> :t unlines
-
+unlines :: [String] -> String
 
 -}
 
