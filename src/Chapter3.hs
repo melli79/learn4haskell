@@ -383,6 +383,22 @@ after the fight. The battle has the following possible outcomes:
 ♫ NOTE: In this task, you need to implement only a single round of the fight.
 
 -}
+data Knight = Knight {
+    knightHealth ::Int,
+    knightAttack ::Int,
+    knightGold ::Int
+  }
+
+data Monster = Monster {
+    monsterHealth ::Int,
+    monsterAttack ::Int,
+    monsterGold ::Int
+  }
+
+fight :: Knight -> Monster -> Int
+fight (Knight _ a g) (Monster hm _ gm) | hm<=a = g + gm
+fight (Knight h a _) (Monster hm am _) | hm>a && h<=am = -1
+fight (Knight _ _ g) m = g
 
 {- |
 =🛡= Sum types
