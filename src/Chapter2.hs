@@ -865,7 +865,9 @@ list.
 
 🕯 HINT: Use the 'cycle' function
 -}
-rotate = error "rotate: Not implemented!"
+rotate :: Int -> [a] -> [a]
+rotate 0 xs = xs
+rotate n xs = take (length xs) (drop n (cycle xs))
 
 {- |
 =💣= Task 12*
