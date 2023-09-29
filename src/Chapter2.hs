@@ -67,7 +67,7 @@ All imports should go at the beginning of the module: after the
 "module MODULE_NAME where" line and before the first function (or
 type) definition.
 
-♫ NOTE: you can use [Hoogle](https://hoohgle.haskell.org/) to explore modules and functions from other
+♫ NOTE: you can use [Hoogle](https://hoogle.haskell.org/) to explore modules and functions from other
   places as well.
 
 When working with lists, the most practical module will be "Data.List":
@@ -210,7 +210,7 @@ to guess first, what you will see.
 3
 
 >>> replicate 5 True
-[True, True, True, True, True]
+[True,True,True,True,True]
 
 >>> take 5 "Hello, World!"
 "Hello"
