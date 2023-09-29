@@ -511,6 +511,65 @@ After defining the city, implement the following functions:
    and at least 10 living __people__ inside in all houses of the city in total.
 -}
 
+data BigBuilding = Church | Library  deriving (Show)
+data House = SingleHouse | CoupleHouse | SmallFamilyHouse | BigFamilyHouse  deriving (Show)
+numberOfFamilyMembers :: House -> Int
+numberOfFamilyMembers SingleHouse = 1
+numberOfFamilyMembers CoupleHouse = 2
+numberOfFamilyMembers SmallFamilyHouse = 3
+numberOfFamilyMembers BigFamilyHouse = 4
+
+data City = CityWithCastle {
+    cityCastle ::String,
+    cityWall  ::Int,
+    cityCentralBuilding ::Maybe(BigBuilding),
+    cityHouses ::[House]
+  } | CityWithoutCastle {
+    cityCentralBuilding ::Maybe(BigBuilding),
+    cityHouses ::[House]
+  } deriving (Show)
+
+
+buildCastle :: String -> City -> City
+buildCastle newName (CityWithCastle oldName wall centralBuilding houses) = CityWithCastle {
+    cityCastle= newName,
+    cityWall= wall,
+    cityCentralBuilding= centralBuilding,
+    cityHouses= houses
+  }
+
+buildCastle newName (CityWithoutCastle centralBuilding houses) = CityWithCastle {
+    cityCastle= newName,
+    cityWall= 0,
+    cityCentralBuilding= centralBuilding,
+    cityHouses= houses
+  }
+
+buildHouse :: House -> City -> City
+buildHouse house (CityWithCastle castle wall centralBuilding houses) = CityWithCastle {
+    cityCastle= castle,
+    cityWall= wall,
+    cityCentralBuilding= centralBuilding,
+    cityHouses= house : houses
+  }
+buildHouse house (CityWithoutCastle centralBuilding houses) = CityWithoutCastle {
+    cityCentralBuilding= centralBuilding,
+    cityHouses= house : houses
+  }
+
+countInhabitants :: [House] -> Int
+countInhabitants = foldr (\h t -> t + (numberOfFamilyMembers h)) 0
+
+buildWall :: City -> City
+buildWall (CityWithoutCastle _ _) = error "You first need a place to gather wealth, like a castle"
+buildWall (CityWithCastle castle oldWall centralBuilding houses) | (countInhabitants houses)>=10 = CityWithCastle {
+    cityCastle= castle,
+    cityWall= oldWall+10,
+    cityCentralBuilding= centralBuilding,
+    cityHouses= houses
+  }
+buildWall (CityWithCastle _ _ _ _) = error "You don't have enough workforce for building a city wall.  Build more houses."
+
 {-
 =🛡= Newtypes
 
