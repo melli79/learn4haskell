@@ -387,13 +387,13 @@ data Knight = Knight {
     knightHealth ::Int,
     knightAttack ::Int,
     knightGold ::Int
-  }
+  } deriving (Show)
 
 data Monster = Monster {
     monsterHealth ::Int,
     monsterAttack ::Int,
     monsterGold ::Int
-  }
+  } deriving (Show)
 
 fight :: Knight -> Monster -> Int
 fight (Knight _ a g) (Monster hm _ gm) | hm<=a = g + gm
@@ -434,7 +434,8 @@ data MagicType
 @
 
 However, the real power of sum types unleashes when you combine them with
-fields. As we mentioned, each "|" case in the sum type could be an ADT, so,
+fields. As we mentioned, each "|" case in the sum type could be a Constructor
+of a product type, so,
 naturally, you can have constructors with fields, which are product types from
 the previous section. If you think about it, the enumeration also contains a
 product type, as it is absolutely legal to create a data type with one
@@ -450,7 +451,7 @@ data Loot
     | WizardStaff Power SpellLevel
 @
 
-You can create values of the sum types by using different constructors:
+You can create values of the sum types by using the different constructors:
 
 @
 woodenSword :: Loot
@@ -485,6 +486,10 @@ and provide more flexibility when working with data types.
 Create a simple enumeration for the meal types (e.g. breakfast). The one who
 comes up with the most number of names wins the challenge. Use your creativity!
 -}
+
+data MealType = Breakfast | MorningSnack | Lunch | Teatime | Dinner | MidnightSnack  deriving (Show)
+
+type Day = [MealType] -- my day consists of Meals, not sure about the order
 
 {- |
 =⚔️= Task 4
