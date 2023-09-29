@@ -729,7 +729,7 @@ pattern matching.
 @
 map :: (a -> b) -> [a] -> [b]
 map _ [] = []
-map f (x:xs) = f x : map f xs
+map f (x:xs) = (f x) : (map f xs)
 @
 
 Now you can see that there is nothing magic in HOFs in the end!
@@ -747,20 +747,23 @@ value of the element itself
 🕯 HINT: Use combination of 'map' and 'replicate'
 -}
 smartReplicate :: [Int] -> [Int]
-smartReplicate l = error "smartReplicate: Not implemented!"
+smartReplicate [] = []
+smartReplicate (x:xs) = (replicate x x) ++ (smartReplicate xs)
 
 {- |
 =⚔️= Task 9
 
 Implement a function that takes a number, a list of lists and returns
-the list with only those lists that contain a passed element.
+the list with only those lists that contain the passed number.
 
 >>> contains 3 [[1, 2, 3, 4, 5], [2, 0], [3, 4]]
 [[1,2,3,4,5],[3,4]]
 
 🕯 HINT: Use the 'elem' function to check whether an element belongs to a list
 -}
-contains = error "contains: Not implemented!"
+contains :: (Eq a) => a -> [[a]] -> [[a]]
+contains _ [] = []
+contains x (xs:tail) = if (elem x xs) then xs : (contains x tail)  else (contains x tail)
 
 
 {- |
