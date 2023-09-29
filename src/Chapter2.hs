@@ -868,6 +868,7 @@ list.
 -}
 rotate :: Int -> [a] -> [a]
 rotate 0 xs = xs
+rotate n _ | n<0 = []
 rotate n xs = take (length xs) (drop n (cycle xs))
 
 {- |
