@@ -348,6 +348,7 @@ from it!
 ghci> :l src/Chapter2.hs
 -}
 subList :: Int -> Int -> [a] -> [a]
+subList beg _ _ | beg<0 = []
 subList beg end xs = take (end-beg+1) (drop beg xs)
 
 {- |
