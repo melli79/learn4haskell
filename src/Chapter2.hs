@@ -360,8 +360,9 @@ Implement a function that returns only the first half of a given list.
 >>> firstHalf "bca"
 "b"
 -}
--- PUT THE FUNCTION TYPE IN HERE
-firstHalf l = error "firstHalf: Not implemented!"
+firstHalf :: [a] -> [a]
+firstHalf xs = take halfLength xs  where
+  halfLength = (length xs) `div` 2
 
 
 {- |
@@ -408,10 +409,10 @@ symbol "_" (underscore) is called __hole__, and it is used when we
 don't care about the value of a variable. It is like a pattern that
 always matches (the same as a variable), but we don't use its value.
 
-👩‍🔬 Unlike 'switch' and 'case' in other languages, that try to go
-  through each switch and perform all actions in there until it reaches
-  the breakpoint, pattern matching on function parameters in Haskell
-  always returns only a single expression for a single branch. You can
+👩‍🔬 Unlike 'switch' or 'case' in C like languages, that try to go
+  through each case and perform all actions in there until it reaches
+  some 'break', pattern matching on function parameters in Haskell
+  always returns only a single expression for a single first branch. You can
   think of this process as trying to match all patterns from the first
   one to the last one and returning the expression on the right side
   of "=" only for the pattern that matches first. This is a helpful
@@ -491,8 +492,9 @@ atLeastTwo _ = False
 
 When matching on the ":" pattern, the first element of the list goes
 to the left side of ':' and the tail of the list goes to the right
-side. You can have even nested patterns (as in the last example
-above). In other words, when writing a pattern like "(x:y:xs)", it is
+side.  Don't forget the parentheses around 'x:xs'. You can have even
+nested patterns (as in the last example above). In other words, when
+writing a pattern like "(x:y:xs)", it is
 the same as writing "(x:(y:xs))".
 
 ♫ NOTE: Often, pattern matching can be replaced with conditional
