@@ -13,7 +13,7 @@ Let's refresh how the training works.
 
 At this step, we are going to learn more about types in Haskell and explore
 typeclasses. You will need to create a lot of types, so we rely on your
-creativity, as you will be given the opportunity to create new worlds out of
+creativity, as you will be given the opportunity to create new worlds using
 Haskell code.
 
 Specifically, in this chapter, you are going to practice:
@@ -144,8 +144,8 @@ Book:
  AND book pages
 
 
--- Sum type
-BookShelf:
+-- Sum type (sometimes called unions in other languages)
+BookPlace:  -- BookShelf = [BookPlace]
     Good  book 1 : {Book}
  OR Good  book 2 : {Book}
  OR Cheap book 3 : {Book}
@@ -343,6 +343,14 @@ Define the Book product data type. You can take inspiration from our description
 of a book, but you are not limited only by the book properties we described.
 Create your own book type of your dreams!
 -}
+
+data Book = Book {
+    booksTitle ::String,
+    booksAuthor ::[String],
+    booksPublisher ::String,
+    booksSizeInPages ::Int,
+    booksPriceInEuros ::Double
+  } deriving (Show)
 
 {- |
 =⚔️= Task 2
