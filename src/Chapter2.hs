@@ -67,7 +67,7 @@ All imports should go at the beginning of the module: after the
 "module MODULE_NAME where" line and before the first function (or
 type) definition.
 
-♫ NOTE: you can use Hoogle to explore modules and functions from other
+♫ NOTE: you can use [Hoogle](https://hoogle.haskell.org/) to explore modules and functions from other
   places as well.
 
 When working with lists, the most practical module will be "Data.List":
@@ -136,43 +136,43 @@ functions in GHCi and insert the corresponding resulting output below:
 
 List of booleans:
 >>> :t [True, False]
-
+[True, False] :: [Bool]
 
 String is a list of characters:
 >>> :t "some string"
-
+"some string" :: String
 
 Empty list:
 >>> :t []
-
+[] :: [a]
 
 Append two lists:
 >>> :t (++)
-
+(++) :: [a] -> [a] -> [a]
 
 Prepend an element at the beginning of a list:
 >>> :t (:)
-
+(:) :: a -> [a] -> [a]
 
 Reverse a list:
 >>> :t reverse
-
+reverse :: [a] -> [a]
 
 Take first N elements of a list:
 >>> :t take
-
+take :: Int -> [a] -> [a]
 
 Create a list from N same elements:
 >>> :t replicate
-
+replicate :: Int -> a -> [a]
 
 Split a string by line breaks:
 >>> :t lines
-
+lines :: String -> [String]
 
 Join a list of strings with line breaks:
 >>> :t unlines
-
+unlines :: [String] -> String
 
 -}
 
@@ -186,31 +186,43 @@ Evaluate the following expressions in GHCi and insert the answers. Try
 to guess first, what you will see.
 
 >>> [10, 2] ++ [3, 1, 5]
+[10,2,3,1,5]
 
 >>> [] ++ [1, 4]  -- [] is an empty list
+[1,4]
 
 >>> 3 : [1, 2]
+[3,1,2]
 
 >>> 4 : 2 : [5, 10]  -- prepend multiple elements
+[4,2,5,10]
 
 >>> [1 .. 10]  -- list ranges
+[1,2,3,4,5,6,7,8,9,10]
 
 >>> [10 .. 1]
+[]
 
 >>> [10, 9 .. 1]  -- backwards list with explicit step
+[10,9,8,7,6,5,4,3,2,1]
 
 >>> length [4, 10, 5]  -- list length
+3
 
 >>> replicate 5 True
+[True,True,True,True,True]
 
 >>> take 5 "Hello, World!"
+"Hello"
 
 >>> drop 5 "Hello, World!"
+", World!"
 
 >>> zip "abc" [1, 2, 3]  -- convert two lists to a single list of pairs
+[('a',1),('b',2),('c',3)]
 
 >>> words "Hello   Haskell     World!"  -- split the string into the list of words
-
+["Hello","Haskell","World!"]
 
 
 👩‍🔬 Haskell has a lot of syntax sugar. In the case with lists, any
@@ -336,7 +348,8 @@ from it!
 ghci> :l src/Chapter2.hs
 -}
 subList :: Int -> Int -> [a] -> [a]
-subList = error "subList: Not implemented!"
+subList beg _ _ | beg<0 = []
+subList beg end xs = take (end-beg+1) (drop beg xs)
 
 {- |
 =⚔️= Task 4
@@ -348,8 +361,9 @@ Implement a function that returns only the first half of a given list.
 >>> firstHalf "bca"
 "b"
 -}
--- PUT THE FUNCTION TYPE IN HERE
-firstHalf l = error "firstHalf: Not implemented!"
+firstHalf :: [a] -> [a]
+firstHalf xs = take halfLength xs  where
+  halfLength = (length xs) `div` 2
 
 
 {- |
@@ -396,10 +410,10 @@ symbol "_" (underscore) is called __hole__, and it is used when we
 don't care about the value of a variable. It is like a pattern that
 always matches (the same as a variable), but we don't use its value.
 
-👩‍🔬 Unlike 'switch' and 'case' in other languages, that try to go
-  through each switch and perform all actions in there until it reaches
-  the breakpoint, pattern matching on function parameters in Haskell
-  always returns only a single expression for a single branch. You can
+👩‍🔬 Unlike 'switch' or 'case' in C like languages, that try to go
+  through each case and perform all actions in there until it reaches
+  some 'break', pattern matching on function parameters in Haskell
+  always returns only a single expression for a single first branch. You can
   think of this process as trying to match all patterns from the first
   one to the last one and returning the expression on the right side
   of "=" only for the pattern that matches first. This is a helpful
@@ -479,8 +493,9 @@ atLeastTwo _ = False
 
 When matching on the ":" pattern, the first element of the list goes
 to the left side of ':' and the tail of the list goes to the right
-side. You can have even nested patterns (as in the last example
-above). In other words, when writing a pattern like "(x:y:xs)", it is
+side.  Don't forget the parentheses around 'x:xs'. You can have even
+nested patterns (as in the last example above). In other words, when
+writing a pattern like "(x:y:xs)", it is
 the same as writing "(x:(y:xs))".
 
 ♫ NOTE: Often, pattern matching can be replaced with conditional
@@ -501,8 +516,9 @@ True
 >>> isThird42 [42, 42, 0, 42]
 False
 -}
-isThird42 = error "isThird42: Not implemented!"
-
+isThird42 :: (Num a, Eq a) => [a] -> Bool
+isThird42 (_:_:42:_) = True
+isThird42 _ = False
 
 {- |
 =🛡= Recursion
@@ -606,7 +622,8 @@ Implement a function that duplicates each element of the list
 
 -}
 duplicate :: [a] -> [a]
-duplicate = error "duplicate: Not implemented!"
+duplicate [] = []
+duplicate (x:xs) = x:x:(duplicate xs)
 
 
 {- |
@@ -621,7 +638,10 @@ Write a function that takes elements of a list only in even positions.
 >>> takeEven [2, 1, 3, 5, 4]
 [2,3,4]
 -}
-takeEven = error "takeEven: Not implemented!"
+takeEven :: [a] -> [a]
+takeEven [] = []
+takeEven [x] = [x]
+takeEven (x:_:xs) = x:(takeEven xs)
 
 {- |
 =🛡= Higher-order functions
@@ -710,7 +730,7 @@ pattern matching.
 @
 map :: (a -> b) -> [a] -> [b]
 map _ [] = []
-map f (x:xs) = f x : map f xs
+map f (x:xs) = (f x) : (map f xs)
 @
 
 Now you can see that there is nothing magic in HOFs in the end!
@@ -728,20 +748,23 @@ value of the element itself
 🕯 HINT: Use combination of 'map' and 'replicate'
 -}
 smartReplicate :: [Int] -> [Int]
-smartReplicate l = error "smartReplicate: Not implemented!"
+smartReplicate [] = []
+smartReplicate (x:xs) = (replicate x x) ++ (smartReplicate xs)
 
 {- |
 =⚔️= Task 9
 
 Implement a function that takes a number, a list of lists and returns
-the list with only those lists that contain a passed element.
+the list with only those lists that contain the passed number.
 
 >>> contains 3 [[1, 2, 3, 4, 5], [2, 0], [3, 4]]
 [[1,2,3,4,5],[3,4]]
 
 🕯 HINT: Use the 'elem' function to check whether an element belongs to a list
 -}
-contains = error "contains: Not implemented!"
+contains :: (Eq a) => a -> [[a]] -> [[a]]
+contains _ [] = []
+contains x (xs:tail) = if (elem x xs) then xs : (contains x tail)  else (contains x tail)
 
 
 {- |
@@ -781,13 +804,14 @@ Let's now try to eta-reduce some of the functions and ensure that we
 mastered the skill of eta-reducing.
 -}
 divideTenBy :: Int -> Int
-divideTenBy x = div 10 x
+divideTenBy = div 10
 
--- TODO: type ;)
-listElementsLessThan x l = filter (< x) l
+listElementsLessThan :: (Ord a) => a -> [a] -> [a]
+listElementsLessThan x = filter (< x)
 
 -- Can you eta-reduce this one???
-pairMul xs ys = zipWith (*) xs ys
+pairMul :: (Num a) => [a] -> [a] -> [a]
+pairMul= zipWith (*)
 
 {- |
 =🛡= Lazy evaluation
@@ -842,7 +866,10 @@ list.
 
 🕯 HINT: Use the 'cycle' function
 -}
-rotate = error "rotate: Not implemented!"
+rotate :: Int -> [a] -> [a]
+rotate 0 xs = xs
+rotate n _ | n<0 = []
+rotate n xs = take (length xs) (drop n (cycle xs))
 
 {- |
 =💣= Task 12*
@@ -858,7 +885,9 @@ and reverses it.
   function, but in this task, you need to implement it manually. No
   cheating!
 -}
-rewind = error "rewind: Not Implemented!"
+rewind :: [a] -> [a]
+rewind [] = []
+rewind (x:xs) = (rewind xs)++[x]
 
 
 {-

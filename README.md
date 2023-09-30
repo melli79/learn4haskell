@@ -155,7 +155,7 @@ Starting to learn Haskell with Learn4Haskell is a piece of cake!
    __to your fork__ with the solution and mention @vrom911 and I
    would be on our way for the review.
 
- > Note, that you should open a PR for your fork of this repo, not this repo.
+ > Note, that you should open a PR for your fork of this repo, not this repo itself.
  > Everyone has their solutions to the included tasks, and they don't mix together
  > well in one repo 🙂
 

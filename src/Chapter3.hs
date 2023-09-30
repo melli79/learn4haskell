@@ -13,7 +13,7 @@ Let's refresh how the training works.
 
 At this step, we are going to learn more about types in Haskell and explore
 typeclasses. You will need to create a lot of types, so we rely on your
-creativity, as you will be given the opportunity to create new worlds out of
+creativity, as you will be given the opportunity to create new worlds using
 Haskell code.
 
 Specifically, in this chapter, you are going to practice:
@@ -144,8 +144,8 @@ Book:
  AND book pages
 
 
--- Sum type
-BookShelf:
+-- Sum type (sometimes called unions in other languages)
+BookPlace:  -- BookShelf = [BookPlace]
     Good  book 1 : {Book}
  OR Good  book 2 : {Book}
  OR Cheap book 3 : {Book}
@@ -340,9 +340,17 @@ afterwards.
 =⚔️= Task 1
 
 Define the Book product data type. You can take inspiration from our description
-of a book, but you are not limited only by the book properties we described.
+of a book, but you are not limited to the book properties we described.
 Create your own book type of your dreams!
 -}
+
+data Book = Book {
+    booksTitle ::String,
+    booksAuthor ::[String],
+    booksPublisher ::String,
+    booksSizeInPages ::Int,
+    booksPriceInEuros ::Double
+  } deriving (Show)
 
 {- |
 =⚔️= Task 2
@@ -375,6 +383,22 @@ after the fight. The battle has the following possible outcomes:
 ♫ NOTE: In this task, you need to implement only a single round of the fight.
 
 -}
+data Knight = Knight {
+    knightHealth ::Int,
+    knightAttack ::Int,
+    knightGold ::Int
+  } deriving (Show)
+
+data Monster = Monster {
+    monsterHealth ::Int,
+    monsterAttack ::Int,
+    monsterGold ::Int
+  } deriving (Show)
+
+fight1 :: Knight -> Monster -> Int
+fight1 (Knight _ a g) (Monster hm _ gm) | hm<=a = g + gm
+fight1 (Knight h a _) (Monster hm am _) | hm>a && h<=am = -1
+fight1 (Knight _ _ g) m = g
 
 {- |
 =🛡= Sum types
@@ -410,7 +434,8 @@ data MagicType
 @
 
 However, the real power of sum types unleashes when you combine them with
-fields. As we mentioned, each "|" case in the sum type could be an ADT, so,
+fields. As we mentioned, each "|" case in the sum type could be a Constructor
+of a product type, so,
 naturally, you can have constructors with fields, which are product types from
 the previous section. If you think about it, the enumeration also contains a
 product type, as it is absolutely legal to create a data type with one
@@ -426,7 +451,7 @@ data Loot
     | WizardStaff Power SpellLevel
 @
 
-You can create values of the sum types by using different constructors:
+You can create values of the sum types by using the different constructors:
 
 @
 woodenSword :: Loot
@@ -462,6 +487,10 @@ Create a simple enumeration for the meal types (e.g. breakfast). The one who
 comes up with the most number of names wins the challenge. Use your creativity!
 -}
 
+data MealType = Breakfast | MorningSnack | Lunch | Teatime | Dinner | MidnightSnack  deriving (Show)
+
+type Day = [MealType] -- my day consists of Meals, not sure about the order
+
 {- |
 =⚔️= Task 4
 
@@ -481,6 +510,66 @@ After defining the city, implement the following functions:
    complicated task, walls can be built only if the city has a castle
    and at least 10 living __people__ inside in all houses of the city in total.
 -}
+
+data BigBuilding = Church | Library  deriving (Show)
+data House = SingleHouse | CoupleHouse | SmallFamilyHouse | BigFamilyHouse  deriving (Show)
+numberOfFamilyMembers :: House -> Int
+numberOfFamilyMembers h = case h of
+   SingleHouse -> 1
+   CoupleHouse -> 2
+   SmallFamilyHouse -> 3
+   BigFamilyHouse -> 4
+
+data City = CityWithCastle {
+    cityCastle ::String,
+    cityWall  ::Int,
+    cityCentralBuilding ::Maybe(BigBuilding),
+    cityHouses ::[House]
+  } | CityWithoutCastle {
+    cityCentralBuilding ::Maybe(BigBuilding),
+    cityHouses ::[House]
+  } deriving (Show)
+
+
+buildCastle :: String -> City -> City
+buildCastle newName (CityWithCastle oldName wall centralBuilding houses) = CityWithCastle {
+    cityCastle= newName,
+    cityWall= wall,
+    cityCentralBuilding= centralBuilding,
+    cityHouses= houses
+  }
+
+buildCastle newName (CityWithoutCastle centralBuilding houses) = CityWithCastle {
+    cityCastle= newName,
+    cityWall= 0,
+    cityCentralBuilding= centralBuilding,
+    cityHouses= houses
+  }
+
+buildHouse :: House -> City -> City
+buildHouse house (CityWithCastle castle wall centralBuilding houses) = CityWithCastle {
+    cityCastle= castle,
+    cityWall= wall,
+    cityCentralBuilding= centralBuilding,
+    cityHouses= house : houses
+  }
+buildHouse house (CityWithoutCastle centralBuilding houses) = CityWithoutCastle {
+    cityCentralBuilding= centralBuilding,
+    cityHouses= house : houses
+  }
+
+countInhabitants :: [House] -> Int
+countInhabitants = foldr (\h t -> t + (numberOfFamilyMembers h)) 0
+
+buildWall :: City -> City
+buildWall (CityWithoutCastle _ _) = error "You first need a place to gather wealth, like a castle"
+buildWall (CityWithCastle castle oldWall centralBuilding houses) | (countInhabitants houses)>=10 = CityWithCastle {
+    cityCastle= castle,
+    cityWall= oldWall+10,
+    cityCentralBuilding= centralBuilding,
+    cityHouses= houses
+  }
+buildWall (CityWithCastle _ _ _ _) = error "You don't have enough workforce for building a city wall.  Build more houses."
 
 {-
 =🛡= Newtypes
@@ -562,22 +651,29 @@ introducing extra newtypes.
 🕯 HINT: if you complete this task properly, you don't need to change the
     implementation of the "hitPlayer" function at all!
 -}
+newtype Health = Health Int  deriving (Show)
+newtype Armor = Armor Int  deriving (Show)
+newtype Attack = Attack Int  deriving (Show)
+newtype Dexterity = Dexterity Int  deriving (Show)
+newtype Strength = Strength Int  deriving (Show)
 data Player = Player
-    { playerHealth    :: Int
-    , playerArmor     :: Int
-    , playerAttack    :: Int
-    , playerDexterity :: Int
-    , playerStrength  :: Int
-    }
+    { playerHealth    :: Health
+    , playerArmor     :: Armor
+    , playerAttack    :: Attack
+    , playerDexterity :: Dexterity
+    , playerStrength  :: Strength
+    } deriving (Show)
 
-calculatePlayerDamage :: Int -> Int -> Int
-calculatePlayerDamage attack strength = attack + strength
+newtype Damage = Damage Int  deriving (Show)
+calculatePlayerDamage :: Attack -> Strength -> Damage
+calculatePlayerDamage (Attack attack) (Strength strength) = Damage (attack + strength)
 
-calculatePlayerDefense :: Int -> Int -> Int
-calculatePlayerDefense armor dexterity = armor * dexterity
+newtype Defense = Defense Int  deriving (Show)
+calculatePlayerDefense :: Armor -> Dexterity -> Defense
+calculatePlayerDefense (Armor armor) (Dexterity dexterity) = Defense (armor * dexterity)
 
-calculatePlayerHit :: Int -> Int -> Int -> Int
-calculatePlayerHit damage defense health = health + defense - damage
+calculatePlayerHit :: Damage -> Defense -> Health -> Health
+calculatePlayerHit (Damage damage) (Defense defense) (Health health) = Health (health + defense - damage)
 
 -- The second player hits first player and the new first player is returned
 hitPlayer :: Player -> Player -> Player
@@ -754,6 +850,11 @@ parametrise data types in places where values can be of any general type.
 🕯 HINT: 'Maybe' that some standard types we mentioned above are useful for
   maybe-treasure ;)
 -}
+data Treasure a = Treasure a  deriving (Show)
+data MagicalPower a = MagicalPower a  deriving (Show)
+
+data Dragon m = Dragon { dragonMagicalPower ::MagicalPower m }  deriving (Show)
+data Lair m t = Lair { lairDragon ::Dragon m, lairTreasure ::Maybe t }  deriving (Show)
 
 {-
 =🛡= Typeclasses
@@ -764,7 +865,7 @@ value without telling you the implementation details.
 
 __Instance__ is a representation of the typeclass ↔︎️ data type relationships. In
 order to show that the data type obeys the typeclasses rules and to use the
-methods of the typeclass on the data values, you need to provide the work
+methods of the typeclass on the data values, you need to provide the working
 instructions under this particular typeclass. And that is the instance of the
 data type for the specific typeclass.
 
@@ -779,7 +880,7 @@ princess has its own instance for that. If you are a prince on a white horse,
 you'd better check the particular instance for your princess to get on the
 salvation journey.
 
-Next, let’s look at one code example for a better illustration of the
+Next, let’s look at a code example for better illustration of the
 instance-typeclass relationship. We can define a typeclass that would tell us
 one's arch enemy.
 
@@ -840,7 +941,7 @@ type is under the hood until it has the instance of the desired typeclass. For t
 we are using __constraints__ in Haskell. It is the identification of affiliation
 to the typeclass. The constraints should go after the "::" sign in the function
 type declaration. You can specify one or many constraints. If more than one they
-should be in parentheses and comma-separated. The end of constraints is
+must be in parentheses and comma-separated. The end of constraints is
 determined with the "=>" arrow, and the function type could be written as usual.
 
 @
@@ -912,6 +1013,18 @@ Implement instances of "Append" for the following types:
 class Append a where
     append :: a -> a -> a
 
+newtype Gold = Gold Int  deriving (Show)
+instance Append Gold  where
+  append (Gold a) (Gold b) = Gold (a+b)
+
+instance Append [a]  where
+  append [] ys = ys
+  append (x:xs) ys = x : (append xs ys)
+
+instance (Append a) => Append (Maybe a)  where
+  append Nothing y = y
+  append (Just x) (Just y) = Just (append x y)
+  append (Just x) Nothing = Just x
 
 {-
 =🛡= Standard Typeclasses and Deriving
@@ -929,12 +1042,9 @@ essential typeclasses:
  ﹡ 'Bounded' — specify the lowest and highest value of the data type
  ﹡ 'Enum' — operate with enumeration types.
 
-You can use Hoogle to check what methods these classes have. Additionally, the
-documentation there shows for which types there are already instances of these
-typeclasses.
-
-Alternatively, you can use the ":i" command in GHCi (short for ":info") to see
-the typeclass methods and its instances for the standard data types.
+You can use Hoogle or `:info Eq`... in GHCi to check what methods these classes
+have. Additionally, the documentation there shows for which types there are
+already instances of these typeclasses.
 
 As these typeclasses are way too useful, and it is relatively straightforward to
 implement instances for such classes, GHC provides a nice feature: __deriving__.
@@ -973,6 +1083,22 @@ implement the following functions:
 🕯 HINT: to implement this task, derive some standard typeclasses
 -}
 
+data Weekday = Sunday | Monday | Tuesday | Wednesday |Thursday | Friday | Saturday  deriving (Show, Read, Eq, Ord, Enum)
+
+isWeekend :: Weekday -> Bool
+isWeekend day = case day of
+  Saturday -> True
+  Sunday -> True
+  _ -> False
+
+nextDay :: Weekday -> Weekday
+nextDay Saturday = Sunday
+nextDay d = succ d
+
+daysToParty :: Weekday -> Int
+daysToParty Saturday = 6
+daysToParty day = (fromEnum Friday) - (fromEnum day)
+
 {-
 =💣= Task 9*
 
@@ -990,11 +1116,14 @@ knights, monsters fighting for a lair, etc.), both of them can perform different
 actions. They do their activities in turns, i.e. one fighter goes first, then
 the other goes second, then the first again, and so on, until one of them wins.
 
-Both knight and monster have a sequence of actions they can do. A knight can
-attack, drink a health potion, cast a spell to increase their defence. A monster
-can only attack or run away. Each fighter starts with some list of actions they
-can do, performs them in sequence one after another, and when the sequence ends,
-the process starts from the beginning.
+Both knight and monster have a sequence of actions they can do. A knight can:
+attack, drink a health potion, cast a spell to increase their defence.
+
+A monster can only attack or run away.
+
+Each fighter starts with some list of actions they want to do, performs them in
+sequence one after another, and when the sequence ends, the process starts from
+the beginning.
 
 Monsters have only health and attack, while knights also have a defence. So when
 knights are attacked, their health is decreased less, if they have more defence.
@@ -1005,9 +1134,93 @@ also have some differences. So it is possible to describe their common
 properties using typeclasses, but they are different data types in the end.
 
 Implement data types and typeclasses, describing such a battle between two
-contestants, and write a function that decides the outcome of a fight!
+contestants, and write a function fight that decides the outcome!
 -}
 
+data KnightAction = KnightAttack | DrinkHealthPotion Int | CastProtectionSpell Int  deriving (Show)
+data MonsterAction = MonsterAttack | RunAway  deriving (Show)
+
+data Combatant = Knight2 {
+    knight2Health ::Int,
+    knight2Attack ::Int,
+    knight2Defense ::Int,
+    knight2Pattern ::[KnightAction]
+  } | Monster2 {
+    monster2Health ::Int,
+    monster2Attack ::Int,
+    monster2Pattern ::[MonsterAction]
+  } deriving (Show)
+
+health :: Combatant -> Int
+health c
+  | isKnight c = knight2Health c
+  | isMonster c = monster2Health c
+
+attack :: Combatant -> Int
+attack c
+  | isKnight c = knight2Attack c
+  | isMonster c = monster2Attack c
+
+defense :: Combatant -> Int
+defense c
+  | isKnight c = knight2Defense c
+  | isMonster c = 0
+
+patternLength :: Combatant -> Int
+patternLength c
+  | isKnight c = length (knight2Pattern c)
+  | isMonster c = length (monster2Pattern c)
+
+isKnight :: Combatant -> Bool
+isKnight (Knight2 _ _ _ _) = True
+isKnight _ = False
+
+isMonster :: Combatant -> Bool
+isMonster (Monster2 _ _ _) = True
+isMonster _ = False
+
+weaken :: Int -> Combatant -> Combatant
+weaken damage c
+  | isKnight c = c { knight2Health= (knight2Health c) - damage }
+  | isMonster c = c { monster2Health= (monster2Health c) - damage }
+
+data Result = Wins | Flees | Continues  deriving (Show, Eq)
+
+perform :: Combatant -> Int -> Combatant -> ((Combatant, Combatant), Result)
+perform a i c
+  | isKnight a = (performK a ((knight2Pattern a)!!i) c, Continues)
+  | isMonster a = performM a ((monster2Pattern a)!!i) c
+
+performK :: Combatant -> KnightAction -> Combatant -> (Combatant, Combatant)
+performK k KnightAttack c = (k, weaken damage c)  where
+  damage = max 0 ((attack k) - (defense c))
+
+performK k (DrinkHealthPotion b) c = (k {knight2Health= (knight2Health k)+b}, c)
+
+performK k (CastProtectionSpell s) c = (k {knight2Defense= (knight2Defense k)+s}, c)
+
+
+performM :: Combatant -> MonsterAction -> Combatant -> ((Combatant, Combatant), Result)
+
+performM m MonsterAttack c = ((m, weaken damage c), Continues)  where
+  damage = max 0 ((monster2Attack m) - (defense c))
+
+performM m RunAway c = ((m, c), Flees)
+
+fight :: Combatant -> Combatant -> ((Combatant, Combatant), Result)
+fight x y = fight2 (x,0) (y,0)
+
+isDying :: Combatant -> Bool
+isDying c = (health c) <= 0
+
+fight2 :: (Combatant, Int) -> (Combatant, Int) -> ((Combatant, Combatant), Result)
+fight2 (x,sx) (y,sy)
+  | isDying x = ((y, x), Wins)
+  | isDying y = ((x, y), Wins)
+  | otherwise = if r/=Flees
+      then fight2 (y1,sy) (x1,(sx+1) `mod` (patternLength x))
+      else ((x,y), Flees)
+      where ((x1, y1), r) = perform x sx y
 
 {-
 You did it! Now it is time to open pull request with your changes
