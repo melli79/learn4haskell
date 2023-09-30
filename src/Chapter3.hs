@@ -340,7 +340,7 @@ afterwards.
 =⚔️= Task 1
 
 Define the Book product data type. You can take inspiration from our description
-of a book, but you are not limited only by the book properties we described.
+of a book, but you are not limited to the book properties we described.
 Create your own book type of your dreams!
 -}
 
@@ -395,10 +395,10 @@ data Monster = Monster {
     monsterGold ::Int
   } deriving (Show)
 
-fight :: Knight -> Monster -> Int
-fight (Knight _ a g) (Monster hm _ gm) | hm<=a = g + gm
-fight (Knight h a _) (Monster hm am _) | hm>a && h<=am = -1
-fight (Knight _ _ g) m = g
+fight1 :: Knight -> Monster -> Int
+fight1 (Knight _ a g) (Monster hm _ gm) | hm<=a = g + gm
+fight1 (Knight h a _) (Monster hm am _) | hm>a && h<=am = -1
+fight1 (Knight _ _ g) m = g
 
 {- |
 =🛡= Sum types
@@ -1114,11 +1114,14 @@ knights, monsters fighting for a lair, etc.), both of them can perform different
 actions. They do their activities in turns, i.e. one fighter goes first, then
 the other goes second, then the first again, and so on, until one of them wins.
 
-Both knight and monster have a sequence of actions they can do. A knight can
-attack, drink a health potion, cast a spell to increase their defence. A monster
-can only attack or run away. Each fighter starts with some list of actions they
-can do, performs them in sequence one after another, and when the sequence ends,
-the process starts from the beginning.
+Both knight and monster have a sequence of actions they can do. A knight can:
+attack, drink a health potion, cast a spell to increase their defence.
+
+A monster can only attack or run away.
+
+Each fighter starts with some list of actions they want to do, performs them in
+sequence one after another, and when the sequence ends, the process starts from
+the beginning.
 
 Monsters have only health and attack, while knights also have a defence. So when
 knights are attacked, their health is decreased less, if they have more defence.
@@ -1129,9 +1132,43 @@ also have some differences. So it is possible to describe their common
 properties using typeclasses, but they are different data types in the end.
 
 Implement data types and typeclasses, describing such a battle between two
-contestants, and write a function that decides the outcome of a fight!
+contestants, and write a function fight that decides the outcome!
 -}
 
+data Combatant = Knight2 {
+    knight2Health ::Int,
+    knight2Attack ::Int,
+    knight2Defense ::Int
+  } | Monster2 {
+    monster2Health ::Int,
+    monster2Attack ::Int
+  } deriving (Show)
+
+health :: Combatant -> Int
+health (Knight2 h _ _) = h
+health (Monster2 h _) = h
+
+attack :: Combatant -> Int
+attack (Knight2 _ a _) = a
+attack (Monster2 _ a) = a
+
+defense :: Combatant -> Int
+defense (Knight2 _ _ d) = d
+defense (Monster2 _ _) = 0
+
+weaken :: Int -> Combatant -> Combatant
+weaken damage (Knight2 h a d) = Knight2 (h-damage) a d
+weaken damage (Monster2 h a) = Monster2 (h-damage) a
+
+isDying :: Combatant -> Bool
+isDying c = (health c) <= 0
+
+fight :: Combatant -> Combatant -> Combatant
+fight x y
+  | isDying x = y
+  | isDying y = x
+  | otherwise = fight (weaken damage y) x  where
+    damage = max 0 ((attack x) - (defense y))
 
 {-
 You did it! Now it is time to open pull request with your changes
