@@ -1150,16 +1150,19 @@ data Combatant = Knight2 {
   } deriving (Show)
 
 health :: Combatant -> Int
-health (Knight2 h _ _ _) = h
-health (Monster2 h _ _) = h
+health c
+  | isKnight c = knight2Health c
+  | isMonster c = monster2Health c
 
 attack :: Combatant -> Int
-attack (Knight2 _ a _ _) = a
-attack (Monster2 _ a _) = a
+attack c
+  | isKnight c = knight2Attack c
+  | isMonster c = monster2Attack c
 
 defense :: Combatant -> Int
-defense (Knight2 _ _ d _) = d
-defense (Monster2 _ _ _) = 0
+defense c
+  | isKnight c = knight2Defense c
+  | isMonster c = 0
 
 patternLength :: Combatant -> Int
 patternLength c
@@ -1197,8 +1200,8 @@ performK k (CastProtectionSpell s) c = (k {knight2Defense= (knight2Defense k)+s}
 
 performM :: Combatant -> MonsterAction -> Combatant -> ((Combatant, Combatant), Result)
 
-performM (Monster2 h a p) MonsterAttack c = ((Monster2 h a p, weaken damage c), Continues)  where
-  damage = max 0 (a - (defense c))
+performM m MonsterAttack c = ((m, weaken damage c), Continues)  where
+  damage = max 0 ((monster2Attack m) - (defense c))
 
 performM m RunAway c = ((m, c), Flees)
 
