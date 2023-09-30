@@ -849,11 +849,11 @@ parametrise data types in places where values can be of any general type.
 🕯 HINT: 'Maybe' that some standard types we mentioned above are useful for
   maybe-treasure ;)
 -}
-newdata Treasure a = Treasure a  deriving (Show)
-newdata MagicalPower a = MagicalPower a  deriving (Show)
+data Treasure a = Treasure a  deriving (Show)
+data MagicalPower a = MagicalPower a  deriving (Show)
 
-data Dragon m = Dragon { dragonMagicalPower ::MagicalPower m } deriving (Show)
-data Lair m t = { lairDragon ::Dragon m, lairTreasure ::Maybe t }  deriving (Show)
+data Dragon m = Dragon { dragonMagicalPower ::MagicalPower m }  deriving (Show)
+data Lair m t = Lair { lairDragon ::Dragon m, lairTreasure ::Maybe t }  deriving (Show)
 
 {-
 =🛡= Typeclasses
@@ -1012,6 +1012,18 @@ Implement instances of "Append" for the following types:
 class Append a where
     append :: a -> a -> a
 
+newtype Gold = Gold Int  deriving (Show)
+instance Append Gold  where
+  append (Gold a) (Gold b) = Gold (a+b)
+
+instance Append [a]  where
+  append [] ys = ys
+  append (x:xs) ys = x : (append xs ys)
+
+instance (Append a) => Append (Maybe a)  where
+  append Nothing y = y
+  append (Just x) (Just y) = Just (append x y)
+  append (Just x) Nothing = Just x
 
 {-
 =🛡= Standard Typeclasses and Deriving
