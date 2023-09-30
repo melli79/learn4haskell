@@ -1135,40 +1135,85 @@ Implement data types and typeclasses, describing such a battle between two
 contestants, and write a function fight that decides the outcome!
 -}
 
+data KnightAction = KnightAttack | DrinkHealthPotion Int | CastProtectionSpell Int  deriving (Show)
+data MonsterAction = MonsterAttack | RunAway  deriving (Show)
+
 data Combatant = Knight2 {
     knight2Health ::Int,
     knight2Attack ::Int,
-    knight2Defense ::Int
+    knight2Defense ::Int,
+    knight2Pattern ::[KnightAction]
   } | Monster2 {
     monster2Health ::Int,
-    monster2Attack ::Int
+    monster2Attack ::Int,
+    monster2Pattern ::[MonsterAction]
   } deriving (Show)
 
 health :: Combatant -> Int
-health (Knight2 h _ _) = h
-health (Monster2 h _) = h
+health (Knight2 h _ _ _) = h
+health (Monster2 h _ _) = h
 
 attack :: Combatant -> Int
-attack (Knight2 _ a _) = a
-attack (Monster2 _ a) = a
+attack (Knight2 _ a _ _) = a
+attack (Monster2 _ a _) = a
 
 defense :: Combatant -> Int
-defense (Knight2 _ _ d) = d
-defense (Monster2 _ _) = 0
+defense (Knight2 _ _ d _) = d
+defense (Monster2 _ _ _) = 0
+
+patternLength :: Combatant -> Int
+patternLength c
+  | isKnight c = length (knight2Pattern c)
+  | isMonster c = length (monster2Pattern c)
+
+isKnight :: Combatant -> Bool
+isKnight (Knight2 _ _ _ _) = True
+isKnight _ = False
+
+isMonster :: Combatant -> Bool
+isMonster (Monster2 _ _ _) = True
+isMonster _ = False
 
 weaken :: Int -> Combatant -> Combatant
-weaken damage (Knight2 h a d) = Knight2 (h-damage) a d
-weaken damage (Monster2 h a) = Monster2 (h-damage) a
+weaken damage c
+  | isKnight c = c { knight2Health= (knight2Health c) - damage }
+  | isMonster c = c { monster2Health= (monster2Health c) - damage }
+
+data Result = Wins | Flees | Continues  deriving (Show, Eq)
+
+perform :: Combatant -> Int -> Combatant -> ((Combatant, Combatant), Result)
+perform a i c
+  | isKnight a = (performK a ((knight2Pattern a)!!i) c, Continues)
+  | isMonster a = performM a ((monster2Pattern a)!!i) c
+
+performK :: Combatant -> KnightAction -> Combatant -> (Combatant, Combatant)
+performK k KnightAttack c = (k, weaken damage c)  where
+  damage = max 0 ((attack k) - (defense c))
+
+performK k (DrinkHealthPotion b) c = (k {knight2Health= (knight2Health k)+b}, c)
+
+performK k (CastProtectionSpell s) c = (k {knight2Defense= (knight2Defense k)+s}, c)
+
+
+performM :: Combatant -> MonsterAction -> Combatant -> ((Combatant, Combatant), Result)
+
+performM (Monster2 h a p) MonsterAttack c = ((Monster2 h a p, weaken damage c), Continues)  where
+  damage = max 0 (a - (defense c))
+
+performM m RunAway c = ((m, c), Flees)
+
+fight :: Combatant -> Combatant -> ((Combatant, Combatant), Result)
+fight x y = fight2 (x,0) (y,0)
 
 isDying :: Combatant -> Bool
 isDying c = (health c) <= 0
 
-fight :: Combatant -> Combatant -> Combatant
-fight x y
-  | isDying x = y
-  | isDying y = x
-  | otherwise = fight (weaken damage y) x  where
-    damage = max 0 ((attack x) - (defense y))
+fight2 :: (Combatant, Int) -> (Combatant, Int) -> ((Combatant, Combatant), Result)
+fight2 (x,sx) (y,sy)
+  | isDying x = ((y, x), Wins)
+  | isDying y = ((x, y), Wins)
+  | otherwise = if r/=Flees then fight2 (y1,sy) (x1,(sx+1) `mod` (patternLength x))  else ((x,y), Flees)  where
+    ((x1, y1), r) = perform x sx y
 
 {-
 You did it! Now it is time to open pull request with your changes
