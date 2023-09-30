@@ -849,6 +849,11 @@ parametrise data types in places where values can be of any general type.
 🕯 HINT: 'Maybe' that some standard types we mentioned above are useful for
   maybe-treasure ;)
 -}
+newdata Treasure a = Treasure a  deriving (Show)
+newdata MagicalPower a = MagicalPower a  deriving (Show)
+
+data Dragon m = Dragon { dragonMagicalPower ::MagicalPower m } deriving (Show)
+data Lair m t = { lairDragon ::Dragon m, lairTreasure ::Maybe t }  deriving (Show)
 
 {-
 =🛡= Typeclasses
@@ -859,7 +864,7 @@ value without telling you the implementation details.
 
 __Instance__ is a representation of the typeclass ↔︎️ data type relationships. In
 order to show that the data type obeys the typeclasses rules and to use the
-methods of the typeclass on the data values, you need to provide the work
+methods of the typeclass on the data values, you need to provide the working
 instructions under this particular typeclass. And that is the instance of the
 data type for the specific typeclass.
 
@@ -874,7 +879,7 @@ princess has its own instance for that. If you are a prince on a white horse,
 you'd better check the particular instance for your princess to get on the
 salvation journey.
 
-Next, let’s look at one code example for a better illustration of the
+Next, let’s look at a code example for better illustration of the
 instance-typeclass relationship. We can define a typeclass that would tell us
 one's arch enemy.
 
@@ -935,7 +940,7 @@ type is under the hood until it has the instance of the desired typeclass. For t
 we are using __constraints__ in Haskell. It is the identification of affiliation
 to the typeclass. The constraints should go after the "::" sign in the function
 type declaration. You can specify one or many constraints. If more than one they
-should be in parentheses and comma-separated. The end of constraints is
+must be in parentheses and comma-separated. The end of constraints is
 determined with the "=>" arrow, and the function type could be written as usual.
 
 @
