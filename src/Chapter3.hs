@@ -1041,12 +1041,9 @@ essential typeclasses:
  ﹡ 'Bounded' — specify the lowest and highest value of the data type
  ﹡ 'Enum' — operate with enumeration types.
 
-You can use Hoogle to check what methods these classes have. Additionally, the
-documentation there shows for which types there are already instances of these
-typeclasses.
-
-Alternatively, you can use the ":i" command in GHCi (short for ":info") to see
-the typeclass methods and its instances for the standard data types.
+You can use Hoogle or `:info Eq`... in GHCi to check what methods these classes
+have. Additionally, the documentation there shows for which types there are
+already instances of these typeclasses.
 
 As these typeclasses are way too useful, and it is relatively straightforward to
 implement instances for such classes, GHC provides a nice feature: __deriving__.
@@ -1084,6 +1081,21 @@ implement the following functions:
 
 🕯 HINT: to implement this task, derive some standard typeclasses
 -}
+
+data Weekday = Sunday | Monday | Tuesday | Wednesday |Thursday | Friday | Saturday  deriving (Show, Read, Eq, Ord, Enum)
+
+isWeekend :: Weekday -> Bool
+isWeekend day = case day of
+  Saturday -> True
+  Sunday -> True
+  _ -> False
+
+nextDay :: Weekday -> Weekday
+nextDay = succ
+
+daysToParty :: Weekday -> Int
+daysToParty Saturday = 6
+daysToParty day = (fromEnum Friday) - (fromEnum day)
 
 {-
 =💣= Task 9*
