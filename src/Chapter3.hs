@@ -1217,8 +1217,10 @@ fight2 :: (Combatant, Int) -> (Combatant, Int) -> ((Combatant, Combatant), Resul
 fight2 (x,sx) (y,sy)
   | isDying x = ((y, x), Wins)
   | isDying y = ((x, y), Wins)
-  | otherwise = if r/=Flees then fight2 (y1,sy) (x1,(sx+1) `mod` (patternLength x))  else ((x,y), Flees)  where
-    ((x1, y1), r) = perform x sx y
+  | otherwise = if r/=Flees
+      then fight2 (y1,sy) (x1,(sx+1) `mod` (patternLength x))
+      else ((x,y), Flees)
+      where ((x1, y1), r) = perform x sx y
 
 {-
 You did it! Now it is time to open pull request with your changes
