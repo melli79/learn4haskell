@@ -514,10 +514,11 @@ After defining the city, implement the following functions:
 data BigBuilding = Church | Library  deriving (Show)
 data House = SingleHouse | CoupleHouse | SmallFamilyHouse | BigFamilyHouse  deriving (Show)
 numberOfFamilyMembers :: House -> Int
-numberOfFamilyMembers SingleHouse = 1
-numberOfFamilyMembers CoupleHouse = 2
-numberOfFamilyMembers SmallFamilyHouse = 3
-numberOfFamilyMembers BigFamilyHouse = 4
+numberOfFamilyMembers h = case h of
+   SingleHouse -> 1
+   CoupleHouse -> 2
+   SmallFamilyHouse -> 3
+   BigFamilyHouse -> 4
 
 data City = CityWithCastle {
     cityCastle ::String,
@@ -1091,7 +1092,8 @@ isWeekend day = case day of
   _ -> False
 
 nextDay :: Weekday -> Weekday
-nextDay = succ
+nextDay Saturday = Sunday
+nextDay d = succ d
 
 daysToParty :: Weekday -> Int
 daysToParty Saturday = 6
